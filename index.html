@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Desafio do Olimpo: Prova Final</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* ================================== */
+        /* CSS (Estilização)                  */
+        /* ================================== */
+        body {
+            font-family: 'Georgia', serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+
+            background-image: url('https://aventurasnahistoria.com.br/wp-content/uploads/deuses_gregos.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed; 
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            border: 4px solid gold;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.8em;
+            color: gold;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 7px rgba(0, 0, 0, 1);
+        }
+        
+        /* --- TELA DE INÍCIO STYLING --- */
+        #start-screen {
+            padding: 40px 20px;
+            background-color: rgba(20, 20, 20, 0.9);
+            border-radius: 10px;
+            border: 2px solid #66ccff;
+            margin-bottom: 20px;
+        }
+        #start-screen h2 {
+            color: #fff;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        #start-screen p {
+            color: #ccc;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        #start-screen strong {
+            color: gold;
+        }
+        #start-btn {
+            background-color: #00ff88;
+            color: #333;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 25px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        #start-btn:hover {
+            background-color: #00e07a;
+            transform: translateY(-2px);
+        }
+
+        /* --- Barra de Status: Nível, Pontos, Vidas e Óbolos --- */
+        #status-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 5px 0;
+            font-size: 1.1em;
+            color: #ccc;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        .status-item span {
+            color: gold;
+            font-weight: bold;
+        }
+        
+        #obolos-display {
+            font-weight: bold;
+            color: #66ccff; 
+            margin-left: 5px;
+        }
+
+        #lives {
+            color: #ff4d4d;
+            font-size: 1.3em;
+            margin-left: 5px;
+        }
+
+        /* --- Barras de Tempo e Progresso --- */
+        #timer-bar-container {
+            height: 10px;
+            background-color: #555;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+            border: 1px solid #ff4d4d;
+        }
+        #timer-bar-fill {
+            height: 100%;
+            width: 100%;
+            background-color: #ff4d4d;
+            transition: width 1s linear;
+        }
+
+        #progress-bar-container {
+            width: 90%;
+            margin: 10px auto 30px auto;
+            background-color: #555;
+            border-radius: 5px;
+            height: 15px;
+            border: 1px solid gold;
+            overflow: hidden;
+        }
+        #progress-bar-fill {
+            height: 100%;
+            width: 0%; 
+            background-color: #00ff88;
+            transition: width 0.5s ease;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+        }
+
+        #options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .option-btn {
+            background-color: #333;
+            color: #fff;
+            border: 2px solid #aaa;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, border-color 0.3s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #555;
+            transform: scale(1.01);
+            border-color: yellow;
+        }
+        
+        .option-btn.faded {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background-color: #1a1a1a;
+        }
+
+        /* --- Feedback e Explicação --- */
+        #feedback {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 30px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: normal;
+        }
+        .correct {
+            color: #00ff88;
+            background-color: rgba(0, 50, 0, 0.7);
+            border: 1px solid #00ff88;
+        }
+        .incorrect {
+            color: #ff6666;
+            background-color: rgba(50, 0, 0, 0.7);
+            border: 1px solid #ff6666;
+        }
+        .explanation {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.95em;
+            font-style: italic;
+            color: #ccc;
+        }
+
+        /* --- Botões de Ação e Loja de Favores --- */
+        #favors-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        #action-container {
+             display: flex;
+             justify-content: flex-end; 
+        }
+        
+        #next-btn, #restart-btn, .favor-btn-item {
+            background-color: gold;
+            color: #333;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .favor-btn-item {
+            background-color: #66ccff; 
+            color: #000;
+            padding: 8px 15px;
+            font-size: 0.9em;
+            line-height: 1.2;
+        }
+        .favor-btn-item:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #333;
+            color: #aaa;
+        }
+
+        #next-btn:hover, #restart-btn:hover, .favor-btn-item:hover:not(:disabled) {
+            background-color: rgb(255, 223, 0);
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #final-score, #final-title {
+            color: gold;
+            font-weight: bold;
+            font-size: 1.5em;
+            display: block;
+        }
+        
+        .correct-answer {
+            background-color: darkgreen !important;
+            border-color: lightgreen !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+        /* --- Novo CSS para o Labirinto --- */
+        #maze-game {
+            background-image: url('https://i.imgur.com/h5r89yC.jpeg'); /* Imagem de fundo do labirinto */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        #maze-container {
+            display: inline-grid;
+            border: 5px solid #a0522d;
+            background-color: rgba(0, 0, 0, 0.7); /* Fundo semi-transparente para o mapa do labirinto */
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(160, 82, 45, 0.5);
+            user-select: none; 
+            outline: none;
+        }
+
+        .maze-cell {
+            width: 25px; 
+            height: 25px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1em; 
+            font-weight: bold;
+        }
+
+        .wall {
+            background-color: #5d3f2c;
+            border: 1px solid #4a3225;
+        }
+
+        .path {
+            background-color: rgba(26, 26, 26, 0.6); /* Caminho mais transparente */
+        }
+
+        .end {
+            background-color: rgba(26, 26, 26, 0.6);
+            color: gold;
+        }
+
+        .player {
+            background-color: rgba(26, 26, 26, 0.6);
+            color: #66ccff; /* Cor do Herói */
+            animation: pulse 1s infinite alternate;
+        }
+
+        .minotaur {
+            background-color: rgba(26, 26, 26, 0.6);
+            color: #ff4d4d; /* Cor do Minotauro */
+            animation: growShrink 0.8s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        @keyframes growShrink {
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>O Desafio do Olimpo</h1>
+
+        <div id="start-screen">
+            <h2>Bem-vindo ao Templo da Sabedoria!</h2>
+            <p>Prove seu conhecimento da Mitologia Grega para os Deuses do Olimpo.</p>
+            <p>Você começará como **Semi-Deus** e deve responder corretamente em **15 segundos** para avançar.</p>
+            <p>Cuidado! Você tem apenas **3 Liras (Vidas)**. Erros custam 1 Lira e -5 Pontos.</p>
+            <p>Acertos concedem **Pontos de Sabedoria** e **Óbolos** (moedas) que podem ser gastos em Favores.</p>
+            <p>Ao completar todos os níveis, você enfrentará a **Prova Final: A Fuga do Labirinto!**</p>
+
+            <button id="start-btn">Começar a Jornada</button>
+        </div>
+        
+        <div id="game-info" class="hidden">
+            <div id="status-bar">
+                <div class="status-item">Nível: <span id="current-level">Semi-Deus</span></div>
+                <div class="status-item">Pontuação: <span id="current-score">0</span></div>
+                <div class="status-item">Vidas (Liras): <span id="lives">❤️❤️❤️</span></div>
+            </div>
+            
+            <div class="status-item" style="margin-bottom: 20px; text-align: right; border-bottom: none;">
+                Moedas (Óbolos 🪙): <span id="obolos-display">0</span>
+            </div>
+
+            <div id="timer-bar-container">
+                <div id="timer-bar-fill"></div>
+            </div>
+
+            <div id="progress-bar-container">
+                <div id="progress-bar-fill"></div>
+            </div>
+        </div>
+
+
+        <div id="quiz-area" class="hidden"> 
+            <h2 id="question">Carregando pergunta...</h2>
+            <div id="options-container">
+                </div>
+            
+            <div id="feedback"></div>
+            
+            <div id="favors-container">
+                <button id="favor-atena-btn" class="favor-btn-item" data-cost="5" data-favor-type="atena">Favor de Atena (50/50) <br> 🪙 5 Óbolos</button>
+                <button id="favor-hermes-btn" class="favor-btn-item" data-cost="3" data-favor-type="hermes">Favor de Hermes (Dica) <br> 🪙 3 Óbolos</button>
+            </div>
+            
+            <div id="action-container">
+                <button id="next-btn" class="hidden">Próxima Jornada</button>
+            </div>
+        </div>
+        
+        <div id="result-area" class="hidden">
+            <h2 id="result-title">Jornada Concluída!</h2>
+            <p>Sua pontuação final: <span id="final-score">0</span> Pontos de Sabedoria.</p>
+            <p>Seu Título no Olimpo: <span id="final-title"></span></p>
+            <button id="restart-btn">Recomeçar a Jornada</button>
+        </div>
+
+        <div id="maze-game" class="hidden">
+            <h2 style="color: #ff6666;">A Prova Final: Fuga do Labirinto!</h2>
+            <p style="color: #ccc;">Você é o Herói (🏃‍♂️) e deve fugir do terrível Minotauro (🐂) e encontrar a saída (✨). Use as setas do teclado (↑ ↓ ← →).</p>
+            
+            <div id="maze-container">
+                </div>
+
+            <p id="maze-message" style="color: #ffcc00; font-weight: bold; margin-top: 15px;">Fuja do Minotauro!</p>
+
+            <button id="maze-restart-btn" class="hidden">Tentar Novamente (Recomeçar Quiz)</button>
+        </div>
+    </div>
+
+    <script>
+        /* ========================================================== */
+        /* JAVASCRIPT (Lógica Completa)                               */
+        /* ========================================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const questions = {
+                easy: [
+                    { question: "Qual deus grego é o governante do Submundo?", options: ["Poseidon", "Zeus", "Hades", "Ares"], answer: "Hades", explanation: "Hades recebeu o domínio do submundo e dos mortos. Seu símbolo é o Elmo da Escuridão." },
+                    { question: "Quem foi a deusa da sabedoria, estratégia e artesã?", options: ["Hera", "Afrodite", "Ártemis", "Atena"], answer: "Atena", explanation: "Atena nasceu da cabeça de Zeus já adulta e em armadura, sendo a protetora da razão e da guerra justa." },
+                    { question: "Qual é o símbolo principal de Poseidon, deus dos mares?", options: ["Raio", "Tridente", "Cetro", "Lira"], answer: "Tridente", explanation: "O Tridente era a arma de Poseidon, usada para agitar o mar e causar terremotos." },
+                    { question: "Qual herói matou a Medusa, usando um escudo espelhado?", options: ["Hércules", "Perseu", "Teseu", "Jasão"], answer: "Perseu", explanation: "Perseu usou o escudo de Atena como espelho para ver a Medusa sem ser transformado em pedra." },
+                    { question: "Onde os deuses olímpicos residiam, de acordo com a mitologia?", options: ["Monte Parnaso", "Templo de Éfeso", "Monte Olimpo", "Ilha de Creta"], answer: "Monte Olimpo", explanation: "O Monte Olimpo era a morada dos principais deuses gregos, liderados por Zeus." },
+                ],
+                medium: [
+                    { question: "Qual criatura mitológica habitava o Labirinto de Creta?", options: ["Cérbero", "Hidra de Lerna", "Minotauro", "Esfinge"], answer: "Minotauro", explanation: "O Minotauro era uma criatura com corpo de homem e cabeça de touro, morta pelo herói Teseu." },
+                    { question: "O herói Hércules teve que realizar quantos 'Trabalhos' em penitência?", options: ["Sete", "Dez", "Doze", "Vinte"], answer: "Doze", explanation: "Os famosos Doze Trabalhos foram impostos a Hércules para purificá-lo após um ato de loucura." },
+                    { question: "Qual deus impôs a Prometeu a punição de ter seu fígado comido por uma águia diariamente?", options: ["Hades", "Apolo", "Zeus", "Hefesto"], answer: "Zeus", explanation: "Zeus, o rei dos deuses, puniu Prometeu por roubar o fogo do Olimpo e entregá-lo à humanidade." },
+                    { question: "Qual é o nome do barqueiro que transporta as almas através do rio Estige no submundo?", options: ["Sísifo", "Sombra", "Caronte", "Érebo"], answer: "Caronte", explanation: "Caronte era o barqueiro que exigia uma moeda (óbolo) para transportar as almas recém-mortas." },
+                    { question: "Qual deusa nasceu da espuma do mar e é a deusa do amor e da beleza?", options: ["Afrodite", "Ártemis", "Deméter", "Héstia"], answer: "Afrodite", explanation: "Afrodite emergiu das espumas do mar e é o arquétipo da beleza e do desejo." }
+                ],
+                hard: [
+                    { question: "Antes dos Deuses Olímpicos, quem eram os governantes do universo na mitologia grega?", options: ["Gigantes", "Titãs", "Ciclopes", "Ninfas"], answer: "Titãs", explanation: "Os Titãs foram os governantes primordiais e foram derrubados pelos Deuses Olímpicos na Titanomaquia." },
+                    { question: "Qual é a divindade primordial que representa o Vazio ou a Ausência?", options: ["Gaia", "Eros", "Caos", "Tártaro"], answer: "Caos", explanation: "No início, havia apenas o Caos, o Vazio primordial, do qual todas as outras divindades e elementos surgiram." },
+                    { question: "O que Sísifo foi amaldiçoado a fazer eternamente no Tártaro?", options: ["Beber água do mar", "Ter o fígado comido", "Rolar uma pedra montanha acima", "Tocar a lira sem parar"], answer: "Rolar uma pedra montanha acima", explanation: "Sísifo foi condenado a rolar uma pedra morro acima, apenas para vê-la rolar de volta, por ter enganado a morte." },
+                    { question: "Qual dos seguintes não é um dos três juízes do submundo?", options: ["Minos", "Radamanto", "Éaco", "Cronos"], answer: "Cronos", explanation: "Cronos era um Titã. Os três juízes do submundo eram Minos, Radamanto e Éaco." },
+                    { question: "Qual é o nome do titã que representa o tempo, pai de Zeus?", options: ["Urano", "Cronos", "Atlas", "Oceano"], answer: "Cronos", explanation: "Cronos (Titan) não deve ser confundido com Chronos (deidade primordial do tempo). Cronos era o pai de Zeus, a quem ele destronou. " },
+                ]
+            };
+            
+            // NOVO MAPA DE LABIRINTO (15x15) MAIS DIFÍCIL
+            // 0: Caminho, 1: Parede, 2: Início (Jogador), 3: Saída (Fim)
+            const MAZE_MAP = [
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 2, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+                [1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+                [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+                [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+                [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+                [1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1],
+                [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1],
+                [1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            ];
+
+            const levels = ['easy', 'medium', 'hard'];
+            const levelTitles = { easy: 'Semi-Deus', medium: 'Herói', hard: 'Titã' };
+            const TIME_LIMIT = 15;
+
+            // Elementos do DOM (Quiz)
+            const startScreen = document.getElementById('start-screen');
+            const startButton = document.getElementById('start-btn');
+            const gameInfo = document.getElementById('game-info');
+            const questionElement = document.getElementById('question');
+            const optionsContainer = document.getElementById('options-container');
+            const feedbackElement = document.getElementById('feedback');
+            const nextButton = document.getElementById('next-btn');
+            const quizArea = document.getElementById('quiz-area');
+            const resultArea = document.getElementById('result-area');
+            const finalScoreElement = document.getElementById('final-score');
+            const finalTitleElement = document.getElementById('final-title');
+            const restartButton = document.getElementById('restart-btn');
+            const currentLevelElement = document.getElementById('current-level');
+            const currentScoreElement = document.getElementById('current-score');
+            const livesElement = document.getElementById('lives');
+            const obolosDisplay = document.getElementById('obolos-display');
+            const timerBarFill = document.getElementById('timer-bar-fill');
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const resultTitleElement = document.getElementById('result-title');
+            const favorAtenaBtn = document.getElementById('favor-atena-btn');
+            const favorHermesBtn = document.getElementById('favor-hermes-btn');
+
+            // Elementos do DOM (Labirinto)
+            const mazeGame = document.getElementById('maze-game');
+            const mazeContainer = document.getElementById('maze-container');
+            const mazeMessage = document.getElementById('maze-message');
+            const mazeRestartBtn = document.getElementById('maze-restart-btn');
+
+            // Variáveis de Estado
+            let currentLevelIndex = 0;
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let lives = 3;
+            let obolos = 0;
+            let timerInterval;
+            let timeElapsed = 0;
+            
+            const MAZE_ROWS = MAZE_MAP.length;
+            const MAZE_COLS = MAZE_MAP[0].length;
+            
+            // Posição inicial do jogador (Busca no Mapa o '2')
+            let playerPos = { row: -1, col: -1 };
+            // Posição inicial do Minotauro (Pode ser definida para um local estratégico)
+            let minotaurPos = { row: -1, col: -1 };
+            let minotaurMoveCounter = 0; // Contador para controlar o movimento do Minotauro
+
+
+            // --- FUNÇÕES DE UTILIDADE ---
+
+            function triggerConfetti() {
+                confetti({
+                    particleCount: 150,
+                    spread: 120,
+                    origin: { y: 0.6 },
+                    colors: ['#FFD700', '#DAA520', '#B8860B', '#FFFFFF'],
+                });
+            }
+
+            function updateLivesDisplay() {
+                livesElement.textContent = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+            }
+
+            function updateObolosDisplay() {
+                obolosDisplay.textContent = obolos;
+                updateFavorButtonsState();
+            }
+            
+            function updateFavorButtonsState() {
+                const favors = [favorAtenaBtn, favorHermesBtn];
+                favors.forEach(btn => {
+                    const cost = parseInt(btn.getAttribute('data-cost'));
+                    btn.disabled = obolos < cost;
+                });
+            }
+
+            // --- FUNÇÕES DE CONTROLE DE JOGO ---
+
+            function startGame() {
+                // Oculta a tela inicial, mostra info e área do quiz
+                startScreen.classList.add('hidden');
+                gameInfo.classList.remove('hidden');
+                quizArea.classList.remove('hidden');
+                restartGame(); 
+            }
+
+            function startTimer() {
+                timeElapsed = 0;
+                clearInterval(timerInterval);
+                timerBarFill.style.width = '100%';
+                
+                timerInterval = setInterval(() => {
+                    timeElapsed++;
+                    const remainingPercent = 100 - (timeElapsed / TIME_LIMIT) * 100;
+                    timerBarFill.style.width = remainingPercent + '%';
+
+                    if (timeElapsed >= TIME_LIMIT) {
+                        clearInterval(timerInterval);
+                        // Passa a pergunta correta para avaliação
+                        checkAnswer(null, questions[levels[currentLevelIndex]][currentQuestionIndex]);
+                    }
+                }, 1000);
+            }
+
+            function checkAnswer(selectedOption, questionData) {
+                clearInterval(timerInterval);
+                
+                favorAtenaBtn.disabled = true;
+                favorHermesBtn.disabled = true;
+
+                disableOptions(selectedOption, questionData.answer);
+                nextButton.classList.remove('hidden');
+
+                const explanationHTML = `<span class="explanation">**Ato de Sabedoria:** ${questionData.explanation}</span>`;
+
+                if (selectedOption === questionData.answer) {
+                    let points = 10;
+                    let bonus = 0;
+                    
+                    if (timeElapsed <= 3) {
+                        bonus = 5;
+                        points += bonus;
+                        feedbackElement.innerHTML = `✅ Correto e RÁPIDO (+${points} PONTOS)! ${explanationHTML}`;
+                    } else {
+                        feedbackElement.innerHTML = `✅ Correto! Você ganhou ${points} Pontos de Sabedoria. ${explanationHTML}`;
+                    }
+                    
+                    feedbackElement.classList.remove('incorrect');
+                    feedbackElement.classList.add('correct');
+                    score += points;
+                    obolos += 1;
+
+                    triggerConfetti();
+
+                } else {
+                    lives--;
+                    score = Math.max(0, score - 5);
+
+                    if (selectedOption === null) {
+                        feedbackElement.innerHTML = `⏱️ O tempo acabou! -1 Lira. A resposta correta era: ${questionData.answer}. ${explanationHTML}`;
+                    } else {
+                        feedbackElement.innerHTML = `❌ Errado! -1 Lira e -5 Pontos. A resposta correta era: ${questionData.answer}. ${explanationHTML}`;
+                    }
+                    
+                    feedbackElement.classList.remove('correct');
+                    feedbackElement.classList.add('incorrect');
+                }
+                
+                currentScoreElement.textContent = score;
+                updateLivesDisplay();
+                updateObolosDisplay();
+
+                if (lives <= 0) {
+                    showResult(true); // Fim de jogo por vidas
+                }
+            }
+
+            function disableOptions(selectedOption, correctAnswer) {
+                const buttons = optionsContainer.querySelectorAll('.option-btn');
+                buttons.forEach(button => {
+                    button.disabled = true;
+
+                    if (button.textContent === correctAnswer) {
+                        button.classList.add('correct-answer');
+                    } else if (button.textContent === selectedOption) {
+                        button.classList.add('incorrect'); 
+                    }
+                });
+            }
+
+            function loadQuestion() {
+                if (lives <= 0) return;
+
+                const currentLevelKey = levels[currentLevelIndex];
+                const currentQuestions = questions[currentLevelKey];
+
+                if (currentQuestionIndex < currentQuestions.length) {
+                    // CORREÇÃO: Usar currentQuestionIndex para pegar a pergunta correta
+                    const currentQuestion = currentQuestions[currentQuestionIndex]; 
+                    
+                    currentLevelElement.textContent = levelTitles[currentLevelKey];
+                    currentScoreElement.textContent = score;
+                    updateObolosDisplay(); 
+                    updateFavorButtonsState(); 
+
+                    const totalQuestionsInLevel = currentQuestions.length;
+                    // Progresso: (Índice da Pergunta Atual / Total de Perguntas no Nível) * 100
+                    const progressPercent = (currentQuestionIndex / totalQuestionsInLevel) * 100;
+                    progressBarFill.style.width = progressPercent + '%';
+
+                    questionElement.textContent = currentQuestion.question;
+                    optionsContainer.innerHTML = ''; 
+                    
+                    currentQuestion.options.forEach(option => {
+                        const button = document.createElement('button');
+                        button.classList.add('option-btn');
+                        button.textContent = option;
+                        button.addEventListener('click', () => checkAnswer(option, currentQuestion));
+                        optionsContainer.appendChild(button);
+                    });
+                    
+                    feedbackElement.textContent = '';
+                    feedbackElement.className = '';
+                    nextButton.classList.add('hidden');
+                    startTimer();
+
+                } else {
+                    moveToNextLevel();
+                }
+            }
+
+            function moveToNextLevel() {
+                clearInterval(timerInterval);
+                progressBarFill.style.width = '100%'; 
+                
+                obolos += 5;
+
+                currentLevelIndex++;
+                currentQuestionIndex = 0; // Reinicia o índice de perguntas para o novo nível
+                
+                if (currentLevelIndex < levels.length) {
+                    const prevTitle = levelTitles[levels[currentLevelIndex - 1]];
+                    const nextTitle = levelTitles[levels[currentLevelIndex]];
+                    
+                    alert(`🏅 Ascensão! Você completou o Nível ${prevTitle} e ganhou 5 Óbolos de Bônus! Avance para o Nível ${nextTitle}.`);
+                    updateObolosDisplay();
+                    loadQuestion();
+                } else {
+                    // Fim do Quiz - Inicia a Prova Final
+                    startMazeGame();
+                }
+            }
+            
+            // --- FUNÇÕES DOS FAVORES (LOJA) ---
+            
+            function useFavorAtena() {
+                const cost = 5;
+                if (obolos < cost) return;
+
+                const currentQuestion = questions[levels[currentLevelIndex]][currentQuestionIndex];
+                const correctAnswer = currentQuestion.answer;
+                const buttons = optionsContainer.querySelectorAll('.option-btn');
+                
+                let incorrectOptions = [];
+                buttons.forEach(button => {
+                    if (button.textContent !== correctAnswer && !button.disabled) {
+                        incorrectOptions.push(button);
+                    }
+                });
+
+                const optionsToRemove = Math.min(2, incorrectOptions.length); 
+                
+                incorrectOptions.sort(() => 0.5 - Math.random());
+                for (let i = 0; i < optionsToRemove; i++) {
+                    incorrectOptions[i].disabled = true;
+                    incorrectOptions[i].classList.add('faded');
+                }
+
+                obolos -= cost;
+                updateObolosDisplay();
+                feedbackElement.innerHTML = `✅ Favor de Atena concedido! Duas opções incorretas foram reveladas.`;
+                feedbackElement.classList.remove('incorrect');
+                feedbackElement.classList.add('correct');
+            }
+
+            function useFavorHermes() {
+                const cost = 3;
+                if (obolos < cost) return;
+                
+                const currentQuestion = questions[levels[currentLevelIndex]][currentQuestionIndex];
+                const explanation = currentQuestion.explanation;
+
+                obolos -= cost;
+                updateObolosDisplay();
+
+                feedbackElement.innerHTML = `📜 Favor de Hermes concedido! Dica de Sabedoria: ${explanation}`;
+                feedbackElement.classList.remove('incorrect');
+                feedbackElement.classList.add('correct');
+            }
+
+            // --- FINALIZAÇÃO E REINÍCIO ---
+
+            function getTitle(finalScore) {
+                if (finalScore >= 150) return "Novo Imortal do Olimpo";
+                if (finalScore >= 100) return "Sábio Oráculo de Delfos";
+                if (finalScore >= 50) return "Herói Consagrado";
+                if (finalScore >= 10) return "Cidadão de Atenas";
+                return "Estrangeiro Sem Rumo";
+            }
+
+            function showResult(isGameOver) {
+                clearInterval(timerInterval);
+                timerBarFill.style.width = '0%';
+                
+                quizArea.classList.add('hidden');
+                gameInfo.classList.add('hidden');
+                mazeGame.classList.add('hidden');
+                resultArea.classList.remove('hidden');
+                
+                finalScoreElement.textContent = score;
+                finalTitleElement.textContent = getTitle(score);
+                
+                if (isGameOver) {
+                    resultTitleElement.textContent = "GAME OVER: A Jornada Foi Interrompida!";
+                    // Não Confetes para Game Over, apenas no sucesso/ponto final.
+                } else {
+                    resultTitleElement.textContent = "Jornada Concluída!";
+                    triggerConfetti();
+                }
+            }
+
+            function restartGame() {
+                currentLevelIndex = 0;
+                currentQuestionIndex = 0;
+                score = 0;
+                lives = 3;
+                obolos = 0;
+                
+                // Reinicia a posição do jogador e minotauro para o início
+                resetMazePositions();
+                
+                resultArea.classList.add('hidden');
+                mazeGame.classList.add('hidden');
+                gameInfo.classList.remove('hidden');
+                quizArea.classList.remove('hidden');
+                
+                progressBarFill.style.width = '0%'; 
+                updateLivesDisplay();
+                updateObolosDisplay();
+                loadQuestion();
+            }
+
+            // ==================================
+            // LÓGICA DO MINIGAME LABIRINTO
+            // ==================================
+
+            function resetMazePositions() {
+                // Encontra a posição inicial do jogador (2)
+                for (let r = 0; r < MAZE_ROWS; r++) {
+                    for (let c = 0; c < MAZE_COLS; c++) {
+                        if (MAZE_MAP[r][c] === 2) {
+                            playerPos = { row: r, col: c };
+                            break;
+                        }
+                    }
+                }
+                // Define uma posição inicial para o Minotauro (longe do jogador, mas em um caminho)
+                minotaurPos = { row: 13, col: 12 }; // Posição estratégica no canto oposto da saída
+                if (MAZE_MAP[minotaurPos.row][minotaurPos.col] === 1 || MAZE_MAP[minotaurPos.row][minotaurPos.col] === 3) {
+                     // Caso a posição padrão seja uma parede ou a saída, procurar outro lugar.
+                     // Por simplicidade, vamos fixar essa, pois sabemos que é um caminho no mapa atual.
+                }
+                minotaurMoveCounter = 0;
+            }
+
+            function renderMaze() {
+                mazeContainer.innerHTML = '';
+                // Define o grid com base no tamanho do novo mapa (15x15)
+                mazeContainer.style.gridTemplateColumns = `repeat(${MAZE_COLS}, 1fr)`; 
+
+                for (let r = 0; r < MAZE_ROWS; r++) {
+                    for (let c = 0; c < MAZE_COLS; c++) {
+                        const cell = document.createElement('div');
+                        cell.classList.add('maze-cell');
+                        
+                        if (MAZE_MAP[r][c] === 1) { 
+                            cell.classList.add('wall');
+                        } else if (MAZE_MAP[r][c] === 3) { 
+                            cell.classList.add('end');
+                            cell.textContent = '✨';
+                        } else {
+                            cell.classList.add('path');
+                        }
+                        
+                        if (r === playerPos.row && c === playerPos.col) {
+                            cell.classList.add('player');
+                            cell.textContent = '🏃‍♂️'; 
+                        } else if (r === minotaurPos.row && c === minotaurPos.col) {
+                            cell.classList.add('minotaur');
+                            cell.textContent = '🐂'; // O Minotauro
+                        }
+                        
+                        mazeContainer.appendChild(cell);
+                    }
+                }
+            }
+
+            function startMazeGame() {
+                document.removeEventListener('keydown', handleMovement); 
+                
+                quizArea.classList.add('hidden');
+                gameInfo.classList.add('hidden');
+                resultArea.classList.add('hidden');
+                mazeGame.classList.remove('hidden');
+                
+                resetMazePositions(); // Define as posições iniciais de herói e minotauro
+                renderMaze();
+                mazeMessage.textContent = 'Fuja do Minotauro! Use as setas (↑ ↓ ← →).';
+
+                document.addEventListener('keydown', handleMovement);
+            }
+
+            // Funções para o movimento do Minotauro
+            const dx = [-1, 1, 0, 0]; // Up, Down
+            const dy = [0, 0, -1, 1]; // Left, Right
+
+            function isValidMinotaurMove(row, col) {
+                return row >= 0 && row < MAZE_ROWS && col >= 0 && col < MAZE_COLS && MAZE_MAP[row][col] !== 1;
+            }
+
+            function moveMinotaur() {
+                // Implementa uma busca em largura (BFS) para encontrar o caminho mais curto até o jogador
+                const queue = [{ row: minotaurPos.row, col: minotaurPos.col, path: [] }];
+                const visited = new Set();
+                visited.add(`${minotaurPos.row},${minotaurPos.col}`);
+
+                while (queue.length > 0) {
+                    const { row, col, path } = queue.shift();
+
+                    if (row === playerPos.row && col === playerPos.col) {
+                        // Encontrou o jogador, siga o primeiro passo do caminho
+                        if (path.length > 0) {
+                            minotaurPos.row = path[0].row;
+                            minotaurPos.col = path[0].col;
+                        }
+                        return; // Minotauro moveu
+                    }
+
+                    for (let i = 0; i < 4; i++) {
+                        const newRow = row + dx[i];
+                        const newCol = col + dy[i];
+
+                        if (isValidMinotaurMove(newRow, newCol) && !visited.has(`${newRow},${newCol}`)) {
+                            visited.add(`${newRow},${newCol}`);
+                            queue.push({ row: newRow, col: newCol, path: [...path, { row: newRow, col: newCol }] });
+                        }
+                    }
+                }
+                // Se não conseguir encontrar um caminho (o que não deve acontecer em um labirinto conectado),
+                // o Minotauro não se move.
+            }
+
+
+            function handleMovement(event) {
+                let newRow = playerPos.row;
+                let newCol = playerPos.col;
+                let moved = false;
+
+                switch (event.key) {
+                    case 'ArrowUp':
+                        newRow--;
+                        moved = true;
+                        break;
+                    case 'ArrowDown':
+                        newRow++;
+                        moved = true;
+                        break;
+                    case 'ArrowLeft':
+                        newCol--;
+                        moved = true;
+                        break;
+                    case 'ArrowRight':
+                        newCol++;
+                        moved = true;
+                        break;
+                }
+
+                if (moved) {
+                    event.preventDefault(); 
+                    
+                    if (newRow >= 0 && newRow < MAZE_ROWS && newCol >= 0 && newCol < MAZE_COLS && MAZE_MAP[newRow][newCol] !== 1) {
+                        
+                        playerPos.row = newRow;
+                        playerPos.col = newCol;
+                        minotaurMoveCounter++;
+
+                        // Movimento do Minotauro a cada 2 movimentos do jogador
+                        if (minotaurMoveCounter % 2 === 0) { 
+                            moveMinotaur();
+                        }
+
+                        // Verifica colisão Minotauro-Jogador
+                        if (playerPos.row === minotaurPos.row && playerPos.col === minotaurPos.col) {
+                            mazeMessage.textContent = '❌ O Minotauro te pegou! Fim de jogo no labirinto!';
+                            alert('GAME OVER no Labirinto! O Minotauro te alcançou. Recomece sua jornada.');
+                            // Para o jogo e volta para a tela inicial do quiz
+                            startGame(); 
+                            return; 
+                        }
+
+                        if (MAZE_MAP[newRow][newCol] === 3) {
+                            finishMazeGame(true);
+                        } else {
+                            renderMaze();
+                        }
+                    } else {
+                        mazeMessage.textContent = 'Parede de pedra. Caminho bloqueado!';
+                        setTimeout(() => mazeMessage.textContent = 'Fuja do Minotauro! Use as setas (↑ ↓ ← →).', 1000);
+                    }
+                }
+            }
+
+            function finishMazeGame(success) {
+                document.removeEventListener('keydown', handleMovement);
+
+                if (success) {
+                    score += 50; 
+                    obolos += 10;
+                    
+                    mazeMessage.textContent = '🏆 VITÓRIA! Você escapou do Labirinto do Minotauro!';
+                    alert(`Pela sua coragem, você recebe 50 Pontos Bônus e 10 Óbolos de Ouro!`);
+                    
+                    // Vai para a tela de resultado final
+                    showResult(false);
+                } else {
+                     // Não há falha por tempo ou vidas no labirinto, apenas por ser pego pelo Minotauro.
+                     // A lógica de "perder" no labirinto já leva para o startGame (reiniciar quiz).
+                }
+            }
+
+            // --- LISTENERS E INÍCIO ---
+            startButton.addEventListener('click', startGame);
+
+            nextButton.addEventListener('click', () => {
+                currentQuestionIndex++;
+                loadQuestion();
+            });
+
+            restartButton.addEventListener('click', startGame);
+            mazeRestartBtn.addEventListener('click', startGame);
+
+            favorAtenaBtn.addEventListener('click', useFavorAtena);
+            favorHermesBtn.addEventListener('click', useFavorHermes);
+
+            // Inicialmente, tudo exceto a tela de início está oculto
+            quizArea.classList.add('hidden');
+            gameInfo.classList.add('hidden');
+            resultArea.classList.add('hidden');
+            mazeGame.classList.add('hidden');
+
+        });
+    </script>
+</body>
+</html>
